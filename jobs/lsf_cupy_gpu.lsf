@@ -15,8 +15,10 @@ mkdir -p results figures /tmp/$USER/matplotlib
 export MPLCONFIGDIR=/tmp/$USER/matplotlib
 
 
+set +u
 source /dtu/projects/02613_2025/conda/conda_init.sh
 conda activate 02613_2026
+set -u
 
 N="${N:-40}"
 python scripts/run_cupy.py "$N" --output-csv "results/cupy_stats_${N}.csv"

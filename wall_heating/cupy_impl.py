@@ -24,9 +24,13 @@ def jacobi_cupy(
     u: np.ndarray,
     interior_mask: np.ndarray,
     max_iter: int,
-    atol: float = 1e-6,
+    atol: float = 0.0,
 ) -> np.ndarray:
-    """Jacobi solver on GPU using vectorized CuPy array operations."""
+    """Jacobi solver on GPU using vectorized CuPy array operations.
+
+    Runs exactly max_iter iterations with no early stopping, avoiding the
+    per-iteration device-to-host sync that was the main nsys bottleneck.
+    """
     _require_cupy()
 
     current = cp.asarray(u)
@@ -41,13 +45,8 @@ def jacobi_cupy(
             + current[:-2, 1:-1]
             + current[2:, 1:-1]
         )
-        delta = cp.max(cp.abs(new_inner - prev_inner) * mask)
-
         nxt[1:-1, 1:-1] = prev_inner + (new_inner - prev_inner) * mask
         current, nxt = nxt, current
-
-        if float(delta.get()) < atol:
-            break
 
     cp.cuda.Stream.null.synchronize()
     return cp.asnumpy(current)

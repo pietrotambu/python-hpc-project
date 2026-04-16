@@ -1,8 +1,0 @@
-numpy
-pandas
-matplotlib
-
-# Optional for assignment tasks 4 and 7-10
-line_profiler
-numba
-# install a CUDA-matched CuPy wheel, e.g. cupy-cuda13x
