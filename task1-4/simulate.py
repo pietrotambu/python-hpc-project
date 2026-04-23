@@ -9,6 +9,14 @@ def load_data(load_dir, bid):
     interior_mask = np.load(join(load_dir, f"{bid}_interior.npy"))
     return u, interior_mask
 
+
+try:
+    profile  # type: ignore[name-defined]
+except NameError:  # pragma: no cover
+    def profile(func):  # type: ignore[misc]
+        return func
+
+@profile
 def jacobi(u, interior_mask, max_iter, atol=1e-6):
     u = np.copy(u)
     for i in range(max_iter):

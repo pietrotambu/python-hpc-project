@@ -27,5 +27,5 @@ N="${N:-20}"
 
 # Run with 'time -v' to capture precise duration in the .out file
 echo "Starting simulation for N=$N..."
-/usr/bin/time -v python ./task1-3/simulate.py "$N" > "results/task2_reference_stats_${N}.csv"
+kernprof -l -v ./task1-4/simulate.py
 echo "Simulation finished."
