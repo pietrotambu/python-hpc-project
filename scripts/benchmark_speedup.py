@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from statistics import median
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,24 +117,22 @@ def main() -> None:
     t1 = float(df.loc[df["workers"] == 1, "time_s_median"].iloc[0])
     df["speedup"] = t1 / df["time_s_median"]
 
-    def parallel_fraction(row: pd.Series) -> float:
-        n = int(row["workers"])
-        s = float(row["speedup"])
-        if n == 1:
-            return float("nan")
-        return (1.0 - 1.0 / s) / (1.0 - 1.0 / n)
-
-    df["p_est"] = df.apply(parallel_fraction, axis=1)
-    p_vals = df["p_est"].dropna().clip(lower=0.0, upper=1.0)
-    p_hat = float(p_vals.median()) if len(p_vals) else 0.0
+    # Amdahl's law: given the serial time T_1 and the parallel fraction p,
+    # the projected speedup at n workers is S(n) = 1 / ((1-p) + p/n).
+    # We estimate p from the workers=2 measurement only — the simplest
+    # calibration point with minimal overhead — then project to all n.
+    s2 = float(df.loc[df["workers"] == 2, "speedup"].iloc[0])
+    p_hat = float(np.clip((1.0 - 1.0 / s2) / (1.0 - 1.0 / 2.0), 0.0, 1.0))
     s_max = float("inf") if p_hat >= 0.999999 else 1.0 / (1.0 - p_hat)
+
+    print(f"\nAmdahl's law projection:")
+    print(f"  p estimated from workers=2: p = {p_hat:.4f}")
+    print(f"  Theoretical max speedup    = {s_max:.2f}x")
 
     out_csv = Path(args.output_csv)
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_csv, index=False)
     print(f"Wrote {out_csv}")
-    print(f"Estimated parallel fraction p ~= {p_hat:.4f}")
-    print(f"Theoretical max speedup from Amdahl ~= {s_max:.2f}")
 
     try:
         os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
@@ -143,16 +142,13 @@ def main() -> None:
         fig, ax = plt.subplots(figsize=(6, 4))
         workers_np = df["workers"].to_numpy()
         speedup_np = df["speedup"].to_numpy()
-        ax.plot(workers_np, speedup_np, marker="o", label="Measured")
 
-        if p_hat > 0:
-            model_workers = workers_np
-            model_speedup = 1.0 / ((1.0 - p_hat) + p_hat / model_workers)
-            ax.plot(model_workers, model_speedup, linestyle="--", label=f"Amdahl fit p={p_hat:.3f}")
+        ax.plot(workers_np, speedup_np, marker="o", color="C0", label="Measured")
+        ax.plot(workers_np, workers_np.astype(float), linestyle="--", color="gray", label="Ideal linear")
 
         ax.set_xlabel("Workers")
         ax.set_ylabel("Speedup")
-        ax.set_title(f"{args.schedule.capitalize()} scheduling speedup ({args.solver})")
+        ax.set_title(f"{args.schedule.capitalize()} scheduling speedup ({args.solver}, N={args.n})")
         ax.grid(True, alpha=0.3)
         ax.legend()
         fig.tight_layout()
