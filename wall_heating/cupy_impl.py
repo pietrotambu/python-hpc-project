@@ -51,7 +51,7 @@ def jacobi_cupy(
         delta = cp.abs(u_inner[interior_mask] - u_new_interior).max()
         u_inner[interior_mask] = u_new_interior
 
-        if float(delta) < atol:
+        if atol > 0 and float(delta) < atol:
             break
 
     return cp.asnumpy(u)
