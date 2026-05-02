@@ -20,5 +20,5 @@ conda activate 02613_2026
 set -u
 
 N="${N:-40}"
-MAX_ITER="${MAX_ITER:-2000}"
+MAX_ITER="${MAX_ITER:-20000}"
 python scripts/run_numba_cuda.py "$N" --max-iter "$MAX_ITER" --output-csv "results/numba_cuda_stats_${N}.csv"

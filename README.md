@@ -30,7 +30,7 @@ python scripts/run_solver.py 40 --solver reference --workers 1
 python scripts/run_solver.py 40 --solver reference --workers 8 --schedule static
 python scripts/run_solver.py 40 --solver reference --workers 8 --schedule dynamic
 python scripts/run_solver.py 40 --solver numba-cpu --workers 1
-python scripts/run_solver.py 40 --solver numba-cuda --workers 1 --max-iter 2000
+python scripts/run_solver.py 40 --solver numba-cuda --workers 1 --max-iter 20000
 python scripts/run_solver.py 40 --solver cupy --workers 1
 ```
 
@@ -57,7 +57,7 @@ make submit-ref N=20
 make submit-static N=80
 make submit-dynamic N=80
 make submit-numba-cpu N=40
-make submit-numba-cuda N=40 MAX_ITER=2000
+make submit-numba-cuda N=40 MAX_ITER=20000
 make submit-cupy N=40
 make submit-cupy-nsys N=20
 make submit-full

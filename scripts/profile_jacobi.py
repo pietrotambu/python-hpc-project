@@ -1,9 +1,5 @@
 #!/usr/bin/env python
-"""Line-profile the reference Jacobi function with kernprof.
-
-Usage:
-    kernprof -l -v scripts/profile_jacobi.py
-"""
+"""Usage: kernprof -l -v scripts/profile_jacobi.py"""
 
 from __future__ import annotations
 
@@ -24,10 +20,7 @@ except NameError:  # pragma: no cover
     def profile(func):  # type: ignore[misc]
         return func
 
-
-@profile
-def profiled_jacobi(u0, interior_mask, max_iter, atol):
-    return jacobi_reference(u0, interior_mask, max_iter, atol)
+jacobi_reference = profile(jacobi_reference)  # type: ignore[name-defined]
 
 
 def parse_args() -> argparse.Namespace:
@@ -42,7 +35,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     u0, mask = load_data(args.load_dir, args.building_id)
-    _ = profiled_jacobi(u0, mask, args.max_iter, args.atol)
+    _ = jacobi_reference(u0, mask, args.max_iter, args.atol)
 
 
 if __name__ == "__main__":

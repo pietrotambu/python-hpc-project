@@ -118,7 +118,7 @@ def jacobi_numba_cuda(
     u: np.ndarray,
     interior_mask: np.ndarray,
     max_iter: int,
-    atol: float = 1e-4,
+    atol=0.0,
 ) -> np.ndarray:
     """
     Exercise 8: helper function that repeatedly launches a single-iteration
