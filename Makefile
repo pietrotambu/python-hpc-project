@@ -30,7 +30,7 @@ help:
 	@echo "  make submit-static N=80        # submit LSF static speedup"
 	@echo "  make submit-dynamic N=80       # submit LSF dynamic speedup"
 	@echo "  make submit-numba-cpu N=40     # submit LSF Numba CPU"
-	@echo "  make submit-numba-cuda N=40 MAX_ITER=2000"
+	@echo "  make submit-numba-cuda N=40 MAX_ITER=20000"
 	@echo "  make submit-cupy N=40"
 	@echo "  make submit-cupy-nsys N=20"
 	@echo "  make submit-full               # submit full dataset run"
