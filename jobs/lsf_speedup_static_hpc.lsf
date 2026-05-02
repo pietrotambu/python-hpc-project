@@ -22,7 +22,7 @@ source /dtu/projects/02613_2025/conda/conda_init.sh
 conda activate 02613_2026
 set -u
 
-N="${N:-96}"
+N=96
 python -u scripts/benchmark_speedup.py \
   --n "$N" \
   --workers 1,2,4,8,12 \
