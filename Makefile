@@ -12,9 +12,7 @@ SOLVER ?= reference
 SCHEDULE ?= dynamic
 CSV ?= results/solver_stats.csv
 
-HPC_MODEL_RES := select[model == XeonE5_2650v4] span[hosts=1] affinity[socket(1)]
-
-.PHONY: help venv clean run-ref run-solver inspect visualize analyze         submit-ref submit-static submit-dynamic submit-numba-cpu submit-numba-cuda         submit-cupy submit-cupy-nsys submit-full
+.PHONY: help venv clean zip run-ref run-solver inspect visualize analyze submit-ref submit-static submit-dynamic submit-numba-cpu submit-numba-cuda submit-cupy submit-cupy-nsys submit-full
 
 define RUN_IN_CONDA
 bash -lc 'source "$(CONDA_INIT)" && conda activate "$(CONDA_ENV)" && $(1)'
@@ -91,6 +89,9 @@ submit-cupy-nsys: venv
 submit-full: venv
 	@mkdir -p results figures
 	bsub -env "all" < jobs/lsf_full_run_hpc.lsf
+
+zip:
+	@zip -r code.zip figures jobs results scripts wall_heating .gitignore Makefile README.md
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache
